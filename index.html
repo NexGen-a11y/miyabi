@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>和食処 雅 — 一椀に、季節を。</title>
+<meta name="description" content="旬の魚と一番出汁。八席のカウンターでお出しする和食処「雅」のお品書きと、ご案内。">
+<meta name="theme-color" content="#0c0c0d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="和食処 雅 — 一椀に、季節を。">
+<meta property="og:description" content="旬の魚と一番出汁。八席のカウンターでお出しする和食処「雅」。">
+<meta property="og:image" content="assets/renders/og.jpg">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/renders/emblem.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="assets/renders/hero.webp" fetchpriority="high">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Shippori+Mincho+B1:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/miyabi.css">
+<!--
+  ※ このサイトは 3D + LP の制作サンプルです。
+     店名・住所・電話番号・料金はいずれも架空のもので、実在の店舗とは関係ありません。
+     画像はすべて Blender(Cycles) で生成したものです。制作手順は blender/README.md に。
+-->
+</head>
+<body>
+<a class="skip-link" href="#main">本文へスキップ</a>
+
+<header class="head" id="head">
+  <div class="head__inner">
+    <a class="brand" href="#top" aria-label="和食処 雅 トップへ">
+      <img class="brand__mon" src="assets/renders/emblem.webp" alt="" width="44" height="44" decoding="async">
+      <span class="brand__text">
+        <span class="brand__ja">雅</span>
+        <span class="brand__en">MIYABI</span>
+      </span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">
+      <span class="nav-toggle__bars" aria-hidden="true"></span>
+      <span class="nav-toggle__label">品書き</span>
+    </button>
+
+    <nav class="nav" id="nav" aria-label="サイト内">
+      <ul class="nav__list">
+        <li><a href="#kokoro">こころ</a></li>
+        <li><a href="#oshinagaki">お品書き</a></li>
+        <li><a href="#utsuwa">器</a></li>
+        <li><a href="#seki">席</a></li>
+        <li><a href="#goannai">ご案内</a></li>
+      </ul>
+      <a class="btn btn--gold nav__cta" href="tel:0312345678">
+        <span aria-hidden="true">03-1234-5678</span>
+        <span class="u-visually-hidden">電話で予約する 03-1234-5678</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ヒーロー -->
+  <section class="hero" id="top">
+    <div class="hero__media">
+      <img src="assets/renders/hero.webp" alt="黒漆の椀に張った澄まし汁。手前に塗り箸、奥に白磁の徳利が置かれた欅のカウンター。"
+           width="2000" height="1200" fetchpriority="high" decoding="async">
+    </div>
+    <div class="hero__veil" aria-hidden="true"></div>
+
+    <div class="hero__body">
+      <p class="hero__eyebrow"><span>和食処</span></p>
+      <h1 class="hero__title">
+        <span class="hero__title-line">一椀に、</span>
+        <span class="hero__title-line">季節を。</span>
+      </h1>
+      <p class="hero__lead">
+        出汁を引く。魚を締める。米を炊く。<br>
+        八席のカウンターで、それだけを丁寧に。
+      </p>
+      <p class="hero__actions">
+        <a class="btn btn--gold" href="#oshinagaki">お品書きを見る</a>
+        <a class="btn btn--ghost" href="#goannai">ご案内</a>
+      </p>
+    </div>
+
+    <a class="hero__scroll" href="#kokoro" aria-label="次のセクションへ">
+      <span class="hero__scroll-text">SCROLL</span>
+      <span class="hero__scroll-line" aria-hidden="true"></span>
+    </a>
+  </section>
+
+  <!-- こころ -->
+  <section class="concept section" id="kokoro" aria-labelledby="kokoro-title">
+    <div class="section__inner concept__inner">
+      <p class="tate" aria-hidden="true">誂<span class="tate__small">えの</span>心</p>
+      <div class="concept__text reveal">
+        <p class="label">こころ</p>
+        <h2 class="h2" id="kokoro-title">足すより、引く。</h2>
+        <p>
+          素材には、その季節にしか出ない匂いがあります。
+          初夏の鱧にも、秋の銀杏にも。
+          雅の仕事は、それを邪魔しないところで止めることです。
+        </p>
+        <p>
+          昆布と鰹でひいた一番出汁に、塩をひとつまみ。
+          味を決めるというより、素材の輪郭をなぞるように整えていきます。
+          献立はその日の仕入れで変わりますので、
+          お品書きは目安としてご覧ください。
+        </p>
+        <p class="sign">店主 &mdash; 雅 三代目</p>
+      </div>
+      <figure class="concept__figure reveal">
+        <img src="assets/renders/chochin.webp" alt="「雅」の一文字を入れた、灯りのともった提灯。"
+             width="820" height="1320" loading="lazy" decoding="async">
+        <figcaption>暖簾をくぐると、この灯りがひとつ。</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- お品書き -->
+  <section class="menu section" id="oshinagaki" aria-labelledby="menu-title">
+    <div class="section__inner">
+      <header class="section__head reveal">
+        <p class="label">お品書き</p>
+        <h2 class="h2" id="menu-title">本日の四品</h2>
+        <p class="section__note">仕入れにより内容が変わります。価格は税込です。</p>
+      </header>
+
+      <ul class="dishes">
+        <li class="dish reveal">
+          <div class="dish__media">
+            <img src="assets/renders/dish-wanmono.webp" alt="金の口縁をまわした黒漆の椀。澄まし汁に梅花麩と三つ葉、柚子の皮が浮かんでいる。"
+                 width="1100" height="1100" loading="lazy" decoding="async">
+          </div>
+          <div class="dish__body">
+            <p class="dish__no">一</p>
+            <h3 class="dish__name">椀物<span class="dish__yomi">わんもの</span></h3>
+            <p class="dish__desc">蛤と手毬麩の澄まし。一番出汁に季節の青味を添えて、柚子の皮をひと切れ。</p>
+            <p class="dish__price"><span>￥</span>1,800</p>
+          </div>
+        </li>
+
+        <li class="dish reveal">
+          <div class="dish__media">
+            <img src="assets/renders/dish-sushi.webp" alt="檜の寿司下駄にのった握り三貫。鮪、鮭、海苔を巻いた玉子。笹の葉と山葵、生姜を添えて。"
+                 width="1400" height="1000" loading="lazy" decoding="async">
+          </div>
+          <div class="dish__body">
+            <p class="dish__no">二</p>
+            <h3 class="dish__name">握り 三貫<span class="dish__yomi">にぎり さんかん</span></h3>
+            <p class="dish__desc">その日の仕入れから三貫。赤酢のシャリを人肌に、煮切りを刷いてお出しします。</p>
+            <p class="dish__price"><span>￥</span>2,600</p>
+          </div>
+        </li>
+
+        <li class="dish reveal">
+          <div class="dish__media">
+            <img src="assets/renders/dish-donabe.webp" alt="黒土鍋で炊いた炊き込みご飯。銀杏と人参、三つ葉が散らしてあり、そばに蓋が置かれている。"
+                 width="1400" height="1000" loading="lazy" decoding="async">
+          </div>
+          <div class="dish__body">
+            <p class="dish__no">三</p>
+            <h3 class="dish__name">土鍋ご飯<span class="dish__yomi">どなべごはん</span></h3>
+            <p class="dish__desc">秋の炊き込み。銀杏と人参を炊き合わせ、三つ葉を散らして。二合から承ります。</p>
+            <p class="dish__price"><span>￥</span>3,200</p>
+          </div>
+        </li>
+
+        <li class="dish reveal">
+          <div class="dish__media">
+            <img src="assets/renders/dish-shuki.webp" alt="呉須の線をまわした白磁の徳利と、酒を注いだ猪口がふたつ。"
+                 width="1100" height="1100" loading="lazy" decoding="async">
+          </div>
+          <div class="dish__body">
+            <p class="dish__no">四</p>
+            <h3 class="dish__name">酒<span class="dish__yomi">さけ</span></h3>
+            <p class="dish__desc">純米を冷やで。白磁の徳利に一合、季節の地酒を三種ご用意しています。</p>
+            <p class="dish__price"><span>￥</span>900</p>
+          </div>
+        </li>
+      </ul>
+
+      <p class="menu__more reveal">
+        お任せのコースは <strong>￥8,800</strong> より。苦手な食材は、ご予約の際にお知らせください。
+      </p>
+    </div>
+  </section>
+
+  <!-- 器 -->
+  <section class="utsuwa section" id="utsuwa" aria-labelledby="utsuwa-title">
+    <div class="section__inner utsuwa__inner">
+      <div class="utsuwa__text reveal">
+        <p class="label">器</p>
+        <h2 class="h2" id="utsuwa-title">器を、手に取る。</h2>
+        <p>
+          料理と同じだけ、器を選んでいます。
+          椀物にお出ししているのは、腰から金粉を蒔いた黒漆の一客。
+          蓋を取ったときに、汁の色がいちばん綺麗に見えるものを選びました。
+        </p>
+        <p class="utsuwa__hint">
+          <span aria-hidden="true">◇</span>
+          ドラッグ、または左右キーで回してご覧いただけます。
+        </p>
+      </div>
+
+      <div class="utsuwa__stage reveal">
+        <div class="viewer" id="viewer"
+             data-frames="32"
+             data-src="assets/turntable/wanmono-{i}.webp"
+             data-model="assets/models/wanmono.glb">
+          <div class="viewer__frame">
+            <img class="viewer__img" id="viewer-img" src="assets/turntable/wanmono-00.webp"
+                 alt="黒漆に金粉を蒔いた汁椀を、ぐるりと回して見ることができます。"
+                 width="620" height="620" loading="lazy" decoding="async" draggable="false">
+            <canvas class="viewer__canvas" id="viewer-canvas" hidden aria-hidden="true"></canvas>
+            <div class="viewer__spinner" id="viewer-spinner" hidden aria-hidden="true"></div>
+          </div>
+          <div class="viewer__bar">
+            <button class="viewer__grab" type="button" id="viewer-grab"
+                    aria-label="器を回す。左右の矢印キーでも回せます。">
+              <span class="viewer__grab-text">回す</span>
+            </button>
+            <button class="viewer__mode" type="button" id="viewer-mode" hidden
+                    aria-pressed="false">リアルタイム3Dで見る</button>
+          </div>
+        </div>
+        <p class="viewer__caption">黒漆金蒔絵 汁椀 &mdash; 口径 120mm</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 席 -->
+  <section class="seat section" id="seki" aria-labelledby="seat-title">
+    <div class="seat__media">
+      <img src="assets/renders/scene-seat.webp" alt="提灯の灯りがともる欅のカウンター。椀と箸が据えられている。"
+           width="1600" height="1100" loading="lazy" decoding="async">
+    </div>
+    <div class="seat__panel reveal">
+      <p class="label">席</p>
+      <h2 class="h2" id="seat-title">灯りの下で。</h2>
+      <p>
+        八席のカウンターと、四名様までの個室がひとつ。
+        カウンターは目の前が調理場ですので、
+        お出しするものの話を聞きながら召し上がっていただけます。
+      </p>
+      <dl class="seat__facts">
+        <div><dt>席数</dt><dd>カウンター 8席 / 個室 1室（4名様まで）</dd></div>
+        <div><dt>ご予約</dt><dd>前日までにお電話で。当日席は空き次第</dd></div>
+        <div><dt>お子様</dt><dd>小学生以上、個室のみご案内しています</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ご案内 -->
+  <section class="info section" id="goannai" aria-labelledby="info-title">
+    <div class="section__inner info__inner">
+      <header class="section__head reveal">
+        <p class="label">ご案内</p>
+        <h2 class="h2" id="info-title">お越しの前に</h2>
+      </header>
+
+      <div class="info__grid">
+        <dl class="info__table reveal">
+          <div><dt>営業時間</dt><dd>17:00 &ndash; 23:00<span>（料理 L.O. 22:00 / 飲物 L.O. 22:30）</span></dd></div>
+          <div><dt>定休日</dt><dd>日曜・第二月曜<span>（祝日は営業しています）</span></dd></div>
+          <div><dt>お支払い</dt><dd>現金・各種カード・電子マネー</dd></div>
+          <div><dt>住所</dt><dd>東京都港区西麻布 2-14-7 雅ビル 1F<span>（地下鉄 六本木駅 2番出口より徒歩 7分）</span></dd></div>
+          <div><dt>電話</dt><dd><a href="tel:0312345678">03-1234-5678</a><span>（15:00 以降がつながりやすいです）</span></dd></div>
+        </dl>
+
+        <div class="info__card reveal">
+          <img class="info__mon" src="assets/renders/emblem.webp" alt="" width="180" height="180" loading="lazy" decoding="async">
+          <p class="info__card-lead">席をご用意してお待ちしています。</p>
+          <p class="info__card-actions">
+            <a class="btn btn--gold btn--wide" href="tel:0312345678">電話で予約する</a>
+            <a class="btn btn--ghost btn--wide" href="mailto:yoyaku@example.com">メールで問い合わせる</a>
+          </p>
+          <p class="info__card-note">※ 当サイトは制作サンプルです。店舗・連絡先は架空のものです。</p>
+        </div>
+      </div>
+
+      <figure class="info__hashi reveal" aria-hidden="true">
+        <img src="assets/renders/hashi.webp" alt="" width="1400" height="620" loading="lazy" decoding="async">
+      </figure>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot__inner">
+    <p class="foot__brand"><span class="foot__ja">雅</span><span class="foot__en">MIYABI &mdash; Japanese Cuisine</span></p>
+    <nav class="foot__nav" aria-label="フッター">
+      <ul>
+        <li><a href="#kokoro">こころ</a></li>
+        <li><a href="#oshinagaki">お品書き</a></li>
+        <li><a href="#utsuwa">器</a></li>
+        <li><a href="#seki">席</a></li>
+        <li><a href="#goannai">ご案内</a></li>
+      </ul>
+    </nav>
+    <p class="foot__note">
+      掲載の写真はすべて Blender で組んだ 3D モデルを Cycles でレンダリングしたものです。
+    </p>
+  </div>
+</footer>
+
+<script type="importmap">
+{ "imports": { "three": "./scripts/vendor/three.module.min.js" } }
+</script>
+<script type="module" src="scripts/miyabi.js"></script>
+</body>
+</html>
