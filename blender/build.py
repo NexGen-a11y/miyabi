@@ -224,6 +224,33 @@ def shot_turntable(ctx):
     return f"{len(paths)} frames"
 
 
+@shot("mon")
+def shot_mon(ctx):
+    """紋を一周させたコマ撮り.
+
+    ページを開いた瞬間の回転リビール（裏 → 横 → 正面）と、
+    スクロールに連動して回る背景の、両方に同じ連番を使う。
+    """
+    S.reset()
+    side, _ = ctx.size(560, 560)
+    S.configure(side, side, ctx.samples(80), transparent=True, exposure=0.10)
+    S.world(0.12)
+    res = assets.build("emblem", stand=False)
+    S.studio(target=res["focus"], radius=res["radius"], key=1.1, rim=2.6,
+             overhead=0.5, key_dir=(1.9, -1.2, 2.6), rim_dir=(-2.0, 2.4, 1.2),
+             fill_dir=(-2.6, -2.2, -0.6))
+    cam = S.camera(target=res["focus"], distance=0.6, azimuth=-90, elevation=0,
+                   focal=125)
+    # 横を向いたコマで紋が痩せても切れないよう、正面のときに余白を多めに取る
+    S.frame(cam, res["objects"], 1.30)
+    frames = max(ctx.q["frames"] + 4, 8)
+    paths = S.turntable(res["objects"], ctx.path("mon"), frames=frames,
+                        prefix="mon", quality=90)
+    for path in paths:
+        P.feather_edges(path)
+    return f"{len(paths)} frames"
+
+
 # --------------------------------------------------------------------------
 # glTF 書き出し — ブラウザで回せるようにする
 # --------------------------------------------------------------------------
@@ -248,9 +275,13 @@ def shot_models(ctx):
 def shot_polish(ctx):
     """焼き直さずに、透過画像の縁だけ整える (既存の出力にかけ直すため)."""
     done = []
-    targets = [os.path.join(ctx.path("renders"), n)
-               for n in sorted(os.listdir(ctx.path("renders")))
-               if n.endswith(".webp")] if os.path.isdir(ctx.path("renders")) else []
+    targets = []
+    for folder in ("renders", "mon"):
+        root = ctx.path(folder)
+        if not os.path.isdir(root):
+            continue
+        targets += [os.path.join(root, n) for n in sorted(os.listdir(root))
+                    if n.endswith(".webp")]
     for path in targets:
         if os.path.basename(path) in {"hero.webp", "scene-seat.webp"}:
             continue  # 不透過のカットは触らない

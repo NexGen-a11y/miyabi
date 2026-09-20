@@ -74,6 +74,63 @@ a { color: inherit; }
 }
 .skip-link:focus { transform: translate(-50%, 0); }
 
+/* ------------------------------------------------------------------ 幕 */
+/* 紋を裏から正面へ回して見せる開幕。Blender で焼いた 36 コマの連番を送る。
+   html.is-opening が付いている間だけ出るので、JS が無ければ最初から開いている。 */
+.opening { display: none; }
+
+html.is-opening .opening {
+  display: grid;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  place-content: center;
+  justify-items: center;
+  gap: clamp(1.5rem, 4vh, 2.75rem);
+  background: radial-gradient(circle at 50% 44%, #141416, #070708 72%);
+}
+html.is-opening body { overflow: hidden; }
+.opening.is-closing { animation: curtain 0.55s var(--ease) forwards; }
+@keyframes curtain {
+  to { opacity: 0; visibility: hidden; }
+}
+
+.opening__stage {
+  width: min(44vw, 15rem);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+.opening__mon {
+  width: 100%;
+  filter: drop-shadow(0 0 2.5rem rgba(201, 164, 90, 0.28));
+}
+.opening__name {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mincho);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 1.1rem + 2vw, 2.4rem);
+  letter-spacing: 0.44em;
+  text-indent: 0.44em;
+  color: var(--shironeri);
+  opacity: 0;
+  transform: translateY(0.75rem);
+}
+.opening__name span {
+  font-size: 0.34em;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  color: var(--kin);
+}
+.opening.is-named .opening__name {
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  opacity: 1;
+  transform: none;
+}
+
 /* ------------------------------------------------------------- 共通部品 */
 .section { position: relative; padding: clamp(5rem, 11vw, 9.5rem) 0; }
 .section__inner {
@@ -227,11 +284,13 @@ a { color: inherit; }
   overflow: hidden;
   isolation: isolate;
 }
-.hero__media { position: absolute; inset: 0; z-index: -2; }
+/* 視差で上下に振るぶん、画面より少し大きく敷いておく */
+.hero__media { position: absolute; inset: -9% 0; z-index: -2; }
 .hero__media img {
   width: 100%; height: 100%;
   object-fit: cover;
   object-position: 62% 58%;
+  will-change: transform;
 }
 .hero__veil {
   position: absolute; inset: 0; z-index: -1;
@@ -336,6 +395,21 @@ a { color: inherit; }
 }
 
 /* ------------------------------------------------------------- お品書き */
+/* スクロールに合わせて回る紋。お品書きの奥に、薄く大きく置く */
+.menu { overflow: hidden; }
+.menu .section__inner { position: relative; z-index: 1; }
+.menu__mon {
+  position: absolute;
+  top: 50%;
+  right: -10%;
+  width: min(54vw, 40rem);
+  transform: translateY(-50%);
+  opacity: 0.085;
+  pointer-events: none;
+  z-index: 0;
+}
+.menu__mon img { width: 100%; }
+
 .dishes {
   list-style: none;
   margin: 0; padding: 0;
@@ -650,6 +724,8 @@ a { color: inherit; }
 @media (max-width: 48rem) {
   :root { --head-h: 4rem; }
 
+  .menu__mon { display: none; }
+
   .nav-toggle {
     display: inline-flex;
     align-items: center;
@@ -707,6 +783,8 @@ a { color: inherit; }
 /* ----------------------------------------------------- 動きを減らす設定 */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  html.is-opening .opening { display: none; }
+  html.is-opening body { overflow: visible; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

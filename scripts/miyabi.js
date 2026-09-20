@@ -4,6 +4,39 @@
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* 連番の URL。{i} を 2 桁に埋める */
+function frameUrl(pattern, index) {
+  return pattern.replace('{i}', String(index).padStart(2, '0'));
+}
+
+function preloadFrames(pattern, indices) {
+  return Promise.all(indices.map((i) => new Promise((resolve) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload = img.onerror = () => resolve(img);
+    img.src = frameUrl(pattern, i);
+  })));
+}
+
+/* 待ちが長引いても先へ進む */
+function atMost(promise, ms) {
+  return Promise.race([promise, new Promise((r) => setTimeout(r, ms))]);
+}
+
+/* rAF で間引くスクロール購読 */
+function onScroll(handler) {
+  let queued = false;
+  const run = () => { queued = false; handler(); };
+  const request = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(run);
+  };
+  window.addEventListener('scroll', request, { passive: true });
+  window.addEventListener('resize', request, { passive: true });
+  handler();
+}
+
 /* ------------------------------------------------------------- ヘッダー */
 function setupHeader() {
   const head = document.getElementById('head');
@@ -325,11 +358,113 @@ async function buildScene(canvas, src) {
   return { renderer, scene };
 }
 
+/* --------------------------------------------------------------- 開幕 */
+/* 紋を裏から正面へ回して見せる。Blender で焼いた連番をそのまま送る。 */
+async function playOpening() {
+  const root = document.documentElement;
+  const el = document.getElementById('opening');
+  if (!el || !root.classList.contains('is-opening')) return;
+
+  const close = () => {
+    try { sessionStorage.setItem('miyabi-opened', '1'); } catch (error) { /* 使えなくてよい */ }
+    el.classList.add('is-closing');
+    setTimeout(() => root.classList.remove('is-opening'), 560);
+  };
+
+  if (reduceMotion) { close(); return; }
+
+  const img = document.getElementById('opening-mon');
+  const pattern = el.dataset.src;
+  const count = Number(el.dataset.frames) || 36;
+  if (!img || !pattern) { close(); return; }
+
+  // 裏 (半周) から正面 (0) まで。途中で横を向く瞬間が見せ場になる
+  const order = [];
+  for (let i = Math.round(count / 2); i < count; i += 1) order.push(i);
+  order.push(0);
+
+  let skipped = false;
+  const skip = () => { skipped = true; };
+  ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach((type) => {
+    window.addEventListener(type, skip, { once: true, passive: true });
+  });
+
+  await atMost(preloadFrames(pattern, order), 1200);
+
+  for (const index of order) {
+    if (skipped) break;
+    img.src = frameUrl(pattern, index);
+    await new Promise((r) => setTimeout(r, 55));
+  }
+  img.src = frameUrl(pattern, 0);
+  el.classList.add('is-named');
+  await new Promise((r) => setTimeout(r, skipped ? 180 : 620));
+  close();
+}
+
+/* ------------------------------------------- スクロールに連動する紋 */
+function setupScrollMon() {
+  const el = document.getElementById('mon-scroll');
+  const section = el && el.closest('section');
+  if (!el || !section || reduceMotion) return;
+
+  const img = el.querySelector('img');
+  const pattern = el.dataset.src;
+  const count = Number(el.dataset.frames) || 36;
+  if (!img || !pattern) return;
+
+  let current = 0;
+  let ready = false;
+
+  const update = () => {
+    if (!ready) return;
+    const rect = section.getBoundingClientRect();
+    const span = rect.height + window.innerHeight;
+    const seen = (window.innerHeight - rect.top) / span;
+    const progress = Math.min(Math.max(seen, 0), 1);
+    const index = Math.round(progress * (count - 1)) % count;
+    if (index === current) return;
+    current = index;
+    img.src = frameUrl(pattern, index);
+  };
+
+  const start = () => {
+    if (ready) return;
+    ready = true;
+    const all = Array.from({ length: count }, (_, i) => i);
+    preloadFrames(pattern, all).then(update);
+  };
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { start(); io.disconnect(); }
+    }, { rootMargin: '40% 0px' });
+    io.observe(section);
+  } else {
+    start();
+  }
+  onScroll(update);
+}
+
+/* ------------------------------------------------- ヒーローの視差 */
+function setupHeroParallax() {
+  const media = document.querySelector('.hero__media img');
+  if (!media || reduceMotion) return;
+  onScroll(() => {
+    // 敷いてある余白 (上下 9%) を越えないところまで
+    const shift = Math.min(window.scrollY, window.innerHeight) * 0.085;
+    media.style.transform = `translate3d(0, ${shift}px, 0)`;
+  });
+}
+
 /* ---------------------------------------------------------------- 起動 */
 function boot() {
   setupHeader();
   setupNav();
   setupReveal();
+  setupHeroParallax();
+  setupScrollMon();
+  playOpening();
 
   const root = document.getElementById('viewer');
   if (root) {

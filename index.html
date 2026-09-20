@@ -18,6 +18,16 @@
 <link rel="preload" as="image" href="assets/renders/hero.webp" fetchpriority="high">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Shippori+Mincho+B1:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles/miyabi.css">
+<script>
+(function () {
+  // 幕は JS のある環境だけ。何が起きても必ず開くよう、保険の時限を掛ける。
+  var root = document.documentElement;
+  var seen = false;
+  try { seen = sessionStorage.getItem('miyabi-opened') === '1'; } catch (e) { seen = false; }
+  if (!seen) root.classList.add('is-opening');
+  setTimeout(function () { root.classList.remove('is-opening'); }, 4500);
+})();
+</script>
 <!--
   ※ このサイトは 3D + LP の制作サンプルです。
      店名・住所・電話番号・料金はいずれも架空のもので、実在の店舗とは関係ありません。
@@ -26,6 +36,15 @@
 </head>
 <body>
 <a class="skip-link" href="#main">本文へスキップ</a>
+
+<div class="opening" id="opening" role="presentation"
+     data-frames="36" data-src="assets/mon/mon-{i}.webp">
+  <div class="opening__stage">
+    <img class="opening__mon" id="opening-mon" src="assets/mon/mon-18.webp" alt=""
+         width="560" height="560" decoding="async" fetchpriority="high">
+  </div>
+  <p class="opening__name"><span>和食処</span>雅</p>
+</div>
 
 <header class="head" id="head">
   <div class="head__inner">
@@ -120,6 +139,11 @@
 
   <!-- お品書き -->
   <section class="menu section" id="oshinagaki" aria-labelledby="menu-title">
+    <div class="menu__mon" id="mon-scroll" aria-hidden="true"
+         data-frames="36" data-src="assets/mon/mon-{i}.webp">
+      <img src="assets/mon/mon-00.webp" alt="" width="560" height="560"
+           loading="lazy" decoding="async">
+    </div>
     <div class="section__inner">
       <header class="section__head reveal">
         <p class="label">お品書き</p>

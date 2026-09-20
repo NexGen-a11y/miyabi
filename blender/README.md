@@ -71,6 +71,7 @@ W/m² で受け取り、被写体半径に応じた距離からワット数を�
 | `chochin` | `renders/chochin.webp` | 提灯。暗い設定で灯りを見せる |
 | `hero` `seat` `og` | `renders/*.webp` `og.jpg` | 席の場面。被写界深度あり |
 | `turntable` | `turntable/wanmono-NN.webp` | 汁椀を 32 コマで一周 |
+| `mon` | `mon/mon-NN.webp` | 紋を 36 コマで一周。開幕とスクロールに使う |
 | `models` | `models/*.glb` | モディファイアを焼いてから glTF 書き出し |
 | `polish` | （既存の出力を上書き） | 透過画像の縁だけ整える。焼き直しは不要 |
 
