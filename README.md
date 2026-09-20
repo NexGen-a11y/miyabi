@@ -14,7 +14,9 @@ scripts/vendor/     three.js (リアルタイム3D表示のみに使用, MIT)
 assets/renders/     Cycles で焼いた静止画 (WebP / JPEG)
 assets/turntable/   汁椀を 32 コマで一周させた連番
 assets/mon/         紋を 36 コマで一周させた連番 (開幕とスクロールに使う)
-assets/models/      glTF-Binary。ブラウザでそのまま回せる
+assets/models/      glTF-Binary。3D ソフトで開ける
+                    wanmono.gltf.json はバッファを埋め込んだ単一 glTF で、
+                    ページはこちらを読む (.glb を配信しないホストがあるため)
 blender/            3D をつくっているコード一式 → blender/README.md
 ```
 

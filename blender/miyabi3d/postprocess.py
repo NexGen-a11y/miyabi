@@ -68,3 +68,42 @@ def soften_shadow(path: str, amount: float = 0.5, luma_max: float = 0.07,
     else:
         out.save(path)
     return path
+
+
+def glb_to_gltf_json(glb_path: str, out_path: str | None = None) -> str:
+    """GLB を、バッファを埋め込んだ単一の glTF (JSON) に開く.
+
+    .glb (model/gltf-binary) を配信しない静的ホストがあるため、
+    ブラウザから読む一点だけは拡張子に依存しない形にしておく。
+    GLTFLoader は中身を見て JSON か GLB かを判断するので、
+    .json という名前で置いても読める。
+    """
+    import base64
+    import json
+    import struct
+
+    with open(glb_path, 'rb') as fh:
+        data = fh.read()
+    magic, version, total = struct.unpack('<4sII', data[:12])
+    if magic != b'glTF' or version != 2:
+        raise ValueError(f"glTF 2.0 の GLB ではない: {glb_path}")
+
+    offset, chunks = 12, {}
+    while offset < total:
+        length, kind = struct.unpack('<I4s', data[offset:offset + 8])
+        chunks[kind.rstrip(b'\x00')] = data[offset + 8:offset + 8 + length]
+        offset += 8 + length
+
+    doc = json.loads(chunks[b'JSON'].decode('utf-8'))
+    if doc.get('images'):
+        raise ValueError("画像を含む glTF は未対応 (雅の器はすべて手続き的マテリアル)")
+    blob = chunks.get(b'BIN', b'')
+    embedded = 'data:application/octet-stream;base64,' + base64.b64encode(blob).decode('ascii')
+    for buffer in doc.get('buffers', []):
+        if 'uri' not in buffer:
+            buffer['uri'] = embedded
+
+    out = out_path or (os.path.splitext(glb_path)[0] + '.gltf.json')
+    with open(out, 'w', encoding='utf-8') as fh:
+        json.dump(doc, fh, separators=(',', ':'))
+    return out

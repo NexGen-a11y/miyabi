@@ -254,6 +254,10 @@ def shot_mon(ctx):
 # --------------------------------------------------------------------------
 # glTF 書き出し — ブラウザで回せるようにする
 # --------------------------------------------------------------------------
+# ブラウザで回すモデル。GLB に加えて埋め込み glTF を書き出す
+WEB_MODELS = {"wanmono"}
+
+
 @shot("models")
 def shot_models(ctx):
     done = []
@@ -268,6 +272,10 @@ def shot_models(ctx):
             M.apply_modifiers(obj)
         path = S.export_glb(meshes, ctx.path("models", f"{name}.glb"))
         done.append(f"{name} ({os.path.getsize(path) // 1024}KB)")
+        if name in WEB_MODELS:
+            # ページから読む一点だけ、拡張子に依存しない埋め込み glTF も置く
+            web = P.glb_to_gltf_json(path)
+            done.append(f"{name}.gltf.json ({os.path.getsize(web) // 1024}KB)")
     return ", ".join(done)
 
 
