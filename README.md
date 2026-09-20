@@ -10,6 +10,7 @@ index.html          ページ本体
 styles/miyabi.css   見た目
 scripts/miyabi.js   ヘッダー・ナビ・器ビューア
 scripts/vendor/     three.js (リアルタイム3D表示のみに使用, MIT)
+                    examples/jsm の階層はそのまま置く (相対 import があるため)
 assets/renders/     Cycles で焼いた静止画 (WebP / JPEG)
 assets/turntable/   汁椀を 32 コマで一周させた連番
 assets/mon/         紋を 36 コマで一周させた連番 (開幕とスクロールに使う)

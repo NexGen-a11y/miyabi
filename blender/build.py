@@ -271,23 +271,30 @@ def shot_models(ctx):
     return ", ".join(done)
 
 
+# 影を拾う床を敷いたカット。ここだけ接地影を薄める
+SHADOWED = ("dish-", "hashi.webp", "wanmono-")
+
+
 @shot("polish")
 def shot_polish(ctx):
-    """焼き直さずに、透過画像の縁だけ整える (既存の出力にかけ直すため)."""
+    """焼き直さずに、透過画像の縁と接地影だけ整える (既存の出力にかけ直せる)."""
     done = []
     targets = []
-    for folder in ("renders", "mon"):
+    for folder in ("renders", "mon", "turntable"):
         root = ctx.path(folder)
         if not os.path.isdir(root):
             continue
         targets += [os.path.join(root, n) for n in sorted(os.listdir(root))
                     if n.endswith(".webp")]
     for path in targets:
-        if os.path.basename(path) in {"hero.webp", "scene-seat.webp"}:
+        name = os.path.basename(path)
+        if name in {"hero.webp", "scene-seat.webp"}:
             continue  # 不透過のカットは触らない
         P.feather_edges(path)
-        done.append(os.path.basename(path))
-    return ", ".join(done) or "対象なし"
+        if any(name.startswith(prefix) or name == prefix for prefix in SHADOWED):
+            P.soften_shadow(path, amount=0.5)
+        done.append(name)
+    return f"{len(done)} 枚"
 
 
 # --------------------------------------------------------------------------

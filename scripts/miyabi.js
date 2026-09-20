@@ -289,8 +289,8 @@ async function setupRealtime(root, turntable) {
 
 async function buildScene(canvas, src) {
   const THREE = await import('three');
-  const { GLTFLoader } = await import('./vendor/GLTFLoader.js');
-  const { RoomEnvironment } = await import('./vendor/RoomEnvironment.js');
+  const { GLTFLoader } = await import('./vendor/jsm/loaders/GLTFLoader.js');
+  const { RoomEnvironment } = await import('./vendor/jsm/environments/RoomEnvironment.js');
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -383,9 +383,11 @@ async function playOpening() {
   const count = Number(el.dataset.frames) || 36;
   if (!img || !pattern) { close(); return; }
 
-  // 裏 (半周) から正面 (0) まで。途中で横を向く瞬間が見せ場になる
+  // 横向き (四分の三周) から正面 (0) まで。
+  // 裏側は黒漆なので暗幕の上ではほぼ見えず、そこから始めると
+  // 半分が空白の時間になってしまう。金が光り出すところから入れる。
   const order = [];
-  for (let i = Math.round(count / 2); i < count; i += 1) order.push(i);
+  for (let i = Math.round(count * 0.78); i < count; i += 1) order.push(i);
   order.push(0);
 
   let skipped = false;
@@ -402,7 +404,7 @@ async function playOpening() {
   for (const index of order) {
     if (skipped) break;
     img.src = frameUrl(pattern, index);
-    await new Promise((r) => setTimeout(r, 55));
+    await new Promise((r) => setTimeout(r, 90));
   }
   img.src = frameUrl(pattern, 0);
   el.classList.add('is-named');
