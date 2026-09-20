@@ -83,6 +83,25 @@ class Turntable {
     return this.pattern.replace('{i}', String(i).padStart(2, '0'));
   }
 
+  /* 画面に入るまでは 32 コマを読みにいかない */
+  watch() {
+    if (!('IntersectionObserver' in window)) {
+      this.visible = true;
+      this.preload();
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        this.visible = entry.isIntersecting;
+        if (entry.isIntersecting && !this.started) {
+          this.started = true;
+          this.preload();
+        }
+      });
+    }, { threshold: 0.2, rootMargin: '25% 0px' });
+    io.observe(this.frame);
+  }
+
   async preload() {
     if (!this.pattern || this.count < 2) return;
     this.spinner.hidden = false;
@@ -145,9 +164,9 @@ class Turntable {
         frame.releasePointerCapture(event.pointerId);
       }
     };
+    // setPointerCapture 中は境界イベントが飛ばないので pointerleave は見ない
     frame.addEventListener('pointerup', release);
     frame.addEventListener('pointercancel', release);
-    frame.addEventListener('pointerleave', release);
 
     this.grab.addEventListener('keydown', (event) => {
       const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: 1, ArrowDown: -1 }[event.key];
@@ -165,12 +184,6 @@ class Turntable {
       this.grab.addEventListener(type, () => { clearInterval(held); held = null; });
     });
 
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(([entry]) => { this.visible = entry.isIntersecting; },
-        { threshold: 0.35 }).observe(frame);
-    } else {
-      this.visible = true;
-    }
     if (!reduceMotion) this.idle();
   }
 
@@ -212,6 +225,12 @@ async function setupRealtime(root, turntable) {
     turntable.mode3d = on;
     turntable.img.hidden = on;
     canvas.hidden = !on;
+    // 写真を隠している間は、canvas 側が器の代わりを務める
+    canvas.setAttribute('aria-hidden', String(!on));
+    if (on) {
+      canvas.setAttribute('role', 'img');
+      canvas.setAttribute('aria-label', turntable.img.alt);
+    }
 
     if (!on || scene) return;
     root.querySelector('.viewer__spinner').hidden = false;
@@ -294,7 +313,7 @@ async function buildScene(canvas, src) {
     pivot.rotation.y += (event.clientX - lastX) * 0.01;
     lastX = event.clientX;
   });
-  ['pointerup', 'pointerleave', 'pointercancel'].forEach((type) => {
+  ['pointerup', 'pointercancel'].forEach((type) => {
     frame.addEventListener(type, () => { dragging = false; });
   });
 
@@ -315,7 +334,8 @@ function boot() {
   const root = document.getElementById('viewer');
   if (root) {
     const turntable = new Turntable(root);
-    turntable.preload().then(() => setupRealtime(root, turntable));
+    turntable.watch();
+    setupRealtime(root, turntable);
   }
 }
 

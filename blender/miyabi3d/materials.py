@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import bpy
 
-from . import KIN, SHU, URUSHI
+from . import KIN, URUSHI
 
 _CACHE: dict[str, bpy.types.Material] = {}
 
@@ -168,11 +168,6 @@ def urushi_makie(base=URUSHI, dust=KIN, name="蒔絵漆"):
     return mat
 
 
-@cached
-def shu_urushi(name="朱漆"):
-    return urushi(color=SHU, gloss=0.08, name=name)
-
-
 # --------------------------------------------------------------------------
 # 金
 # --------------------------------------------------------------------------
@@ -283,13 +278,6 @@ def kuroki(name="黒木"):
                  contrast=0.5)
 
 
-@cached
-def bamboo(name="竹"):
-    return _wood(name, (0.430, 0.352, 0.196), (0.320, 0.246, 0.122),
-                 scale=(6.0, 6.0, 1.0), band_scale=5.0, roughness=0.38, coat=0.22,
-                 bump=0.10, direction='Z', contrast=0.35)
-
-
 # --------------------------------------------------------------------------
 # 陶
 # --------------------------------------------------------------------------
@@ -349,19 +337,6 @@ def ameyu(name="飴釉"):
     return mat
 
 
-@cached
-def stone_dark(name="鉄平石"):
-    mat, nt, bsdf = _material(name)
-    _set(bsdf, base_color=(0.020, 0.020, 0.022), roughness=0.55, specular=0.35)
-    _, mp = _coords(nt, "Object", (3, 3, 3))
-    n1 = _noise(nt, mp.outputs["Vector"], scale=4.0, detail=9.0, roughness=0.75, distortion=1.4)
-    _bump(nt, bsdf, n1.outputs["Fac"], strength=0.35, distance=0.004)
-    ramp = _ramp(nt, [(0.30, (0.34, 0.34, 0.34)), (0.72, (0.66, 0.66, 0.66))], (-700, 40))
-    nt.links.new(n1.outputs["Fac"], ramp.inputs["Fac"])
-    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Roughness"])
-    return mat
-
-
 # --------------------------------------------------------------------------
 # 料理
 # --------------------------------------------------------------------------
@@ -381,11 +356,6 @@ def dashi(color=(0.20, 0.115, 0.045), density=26.0, cloud=0.0,
     absorb.inputs["Density"].default_value = density
     nt.links.new(absorb.outputs[0], nt.nodes["Material Output"].inputs["Volume"])
     return mat
-
-
-@cached
-def shoyu(name="醤油"):
-    return dashi(color=(0.085, 0.030, 0.012), density=140.0, name=name)
 
 
 @cached
@@ -462,26 +432,6 @@ def tamago(name="玉子"):
 
 
 @cached
-def ebi(name="海老"):
-    mat, nt, bsdf = _material(name)
-    _set(bsdf, roughness=0.22, specular=0.6, subsurface=0.3,
-         subsurface_radius=(0.9, 0.42, 0.34), subsurface_scale=0.0026,
-         coat=0.45, coat_roughness=0.10)
-    _, mp = _coords(nt, "Object", (1, 1, 1))
-    band = nt.nodes.new("ShaderNodeTexWave")
-    band.location = (-950, 60)
-    band.wave_type = 'BANDS'
-    band.bands_direction = 'Y'
-    band.inputs["Scale"].default_value = 9.0
-    band.inputs["Distortion"].default_value = 1.2
-    nt.links.new(mp.outputs["Vector"], band.inputs["Vector"])
-    ramp = _ramp(nt, [(0.30, (0.80, 0.76, 0.70)), (0.62, (0.62, 0.075, 0.042))], (-700, 60))
-    nt.links.new(band.outputs["Fac"], ramp.inputs["Fac"])
-    nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
-    return mat
-
-
-@cached
 def nori(name="海苔"):
     mat, nt, bsdf = _material(name)
     _set(bsdf, base_color=(0.012, 0.018, 0.014), roughness=0.44, specular=0.35,
@@ -534,55 +484,6 @@ def fu(name="手毬麩"):
 # --------------------------------------------------------------------------
 # 和紙・布
 # --------------------------------------------------------------------------
-@cached
-def washi(emission=6.0, tint=(1.0, 0.72, 0.40), name="和紙"):
-    """提灯の火袋。内側からの灯りを透かす."""
-    mat, nt, bsdf = _material(name)
-    _set(bsdf, base_color=(0.94, 0.88, 0.76), roughness=0.75, specular=0.2,
-         emission=tint, emission_strength=emission, sheen=0.3)
-    _, mp = _coords(nt, "Object", (1, 1, 1))
-    fibre = _noise(nt, mp.outputs["Vector"], scale=150.0, detail=8.0, roughness=0.75,
-                   distortion=1.2)
-    ramp = _ramp(nt, [(0.32, (0.65, 0.65, 0.65)), (0.70, (1.0, 1.0, 1.0))], (-700, 120))
-    nt.links.new(fibre.outputs["Fac"], ramp.inputs["Fac"])
-    strength = nt.nodes.new("ShaderNodeMath")
-    strength.operation = 'MULTIPLY'
-    strength.location = (-460, 120)
-    strength.inputs[1].default_value = emission
-    nt.links.new(ramp.outputs["Color"], strength.inputs[0])
-    nt.links.new(strength.outputs[0], bsdf.inputs["Emission Strength"])
-    _bump(nt, bsdf, fibre.outputs["Fac"], strength=0.2, distance=0.0004)
-    return mat
-
-
-@cached
-def noren_cloth(color=(0.030, 0.028, 0.032), name="暖簾"):
-    mat, nt, bsdf = _material(name)
-    _set(bsdf, base_color=color, roughness=0.85, specular=0.2,
-         sheen=0.6, sheen_roughness=0.4)
-    _, mp = _coords(nt, "Object", (1, 1, 1))
-    weave = nt.nodes.new("ShaderNodeTexWave")
-    weave.location = (-950, -300)
-    weave.wave_type = 'BANDS'
-    weave.bands_direction = 'X'
-    weave.inputs["Scale"].default_value = 300.0
-    nt.links.new(mp.outputs["Vector"], weave.inputs["Vector"])
-    _bump(nt, bsdf, weave.outputs["Fac"], strength=0.15, distance=0.0003)
-    return mat
-
-
-@cached
-def emissive(color=(1.0, 0.68, 0.34), strength=30.0, name="灯"):
-    mat, nt, bsdf = _material(name)
-    nt.nodes.remove(bsdf)
-    node = nt.nodes.new("ShaderNodeEmission")
-    node.location = (-200, 0)
-    node.inputs["Color"].default_value = (*color, 1)
-    node.inputs["Strength"].default_value = strength
-    nt.links.new(node.outputs[0], nt.nodes["Material Output"].inputs["Surface"])
-    return mat
-
-
 def image_decal(image: bpy.types.Image, base, ink=(0.02, 0.02, 0.02),
                 name="文字", emission=0.0):
     """PIL で焼いた文字画像を UV で貼る (暖簾・提灯の「雅」用)."""

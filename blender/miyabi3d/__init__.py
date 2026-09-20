@@ -7,10 +7,6 @@ Blender を Python モジュール (`pip install bpy`) として使い、
 
 __version__ = "1.0.0"
 
-# 店のパレット (リニア sRGB。ウェブ側 styles/miyabi.css と対応)
-SUMI = (0.016, 0.016, 0.018)       # 墨
+# 店の色 (リニア sRGB)。ウェブ側 styles/miyabi.css の --sumi / --kin と揃えてある
 URUSHI = (0.010, 0.009, 0.010)     # 黒漆
-SHU = (0.315, 0.038, 0.027)        # 朱
 KIN = (0.760, 0.520, 0.180)        # 金
-SHIRONERI = (0.930, 0.900, 0.830)  # 白練
-MATCHA = (0.120, 0.230, 0.090)     # 抹茶

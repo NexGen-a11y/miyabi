@@ -30,11 +30,22 @@ def _inner_wall(limit=FILL, inset=0.0014):
     return pts
 
 
-def surface_z(distance: float) -> float:
-    """盛り上がった飯の、中心から distance 離れた位置の高さ."""
+def _cap(t: float) -> tuple[float, float]:
+    """山盛りの断面。t=0 が縁、t=1 が頂点."""
     top_r = _inner_wall()[-1][0]
-    t = min(max(distance / max(top_r, 1e-6), 0.0), 1.0)
-    return FILL + CAP * max(1.0 - t ** 2, 0.0) ** 0.62
+    return (top_r * max(math.cos(t * math.pi / 2), 0.0) ** 0.62,
+            FILL + CAP * max(math.sin(t * math.pi / 2), 0.0) ** 0.9)
+
+
+def surface_z(distance: float) -> float:
+    """盛り上がった飯の、中心から distance 離れた位置の高さ.
+
+    盛りの断面をそのまま逆に解く。近似で済ませると具が飯に沈む。
+    """
+    top_r = _inner_wall()[-1][0]
+    ratio = min(max(distance / max(top_r, 1e-6), 0.0), 1.0)
+    t = 2.0 / math.pi * math.acos(min(ratio ** (1 / 0.62), 1.0))
+    return _cap(t)[1]
 
 
 def pot(collection=None):
@@ -89,11 +100,7 @@ def rice(collection=None):
     """炊き上がりの飯。鍋の内壁なりに詰めて、中央を山にする."""
     wall = _inner_wall()
     top_r = wall[-1][0]
-    cap = []
-    for i in range(1, 15):
-        t = i / 14
-        cap.append((top_r * max(math.cos(t * math.pi / 2), 0.0) ** 0.62,
-                    FILL + CAP * max(math.sin(t * math.pi / 2), 0.0) ** 0.9))
+    cap = [_cap(i / 14) for i in range(1, 15)]
     profile = M.chain([(0.0, wall[0][1] + 0.0004)], wall, cap)
     mound = M.revolve(profile, 120, "炊き込みご飯", smooth_angle=44,
                       collection=collection)
@@ -106,27 +113,30 @@ def rice(collection=None):
 def toppings(collection=None):
     out = []
     ginnan_mat = MAT.greens(color=(0.52, 0.50, 0.11), roughness=0.30, name="銀杏")
-    for x, y, spin in ((-0.030, 0.026, 24), (0.020, 0.036, -40), (0.042, -0.016, 62)):
-        nut = M.dome(radius=0.0072, height=0.0115, steps=12, segments=40,
+    for x, y, spin in ((-0.032, 0.024, 24), (0.018, 0.038, -40), (0.044, -0.014, 62),
+                       (-0.012, -0.030, 8), (0.030, 0.008, -76)):
+        nut = M.dome(radius=0.0088, height=0.0140, steps=12, segments=40,
                      flatten=-0.35, name="銀杏", collection=collection)
-        M.place(nut, (x, y, surface_z(math.hypot(x, y)) - 0.0035),
-                (72, 0, spin), scale=(1.0, 0.78, 1.0))
+        M.place(nut, (x, y, surface_z(math.hypot(x, y)) - 0.0018),
+                (76, 0, spin), scale=(1.0, 0.78, 1.0))
         M.set_material(nut, ginnan_mat)
         out.append(nut)
 
     carrot_mat = MAT.greens(color=(0.62, 0.20, 0.035), roughness=0.34, name="人参")
     for i, (x, y, spin, tilt) in enumerate((
-            (-0.012, -0.038, 18, 6), (0.048, 0.020, -52, -9), (-0.052, -0.006, 74, 4))):
-        stick = M.rounded_box((0.026, 0.0055, 0.0038), bevel=0.0012, segments=3,
+            (-0.010, -0.046, 18, 6), (0.050, 0.024, -52, -9), (-0.054, -0.004, 74, 4),
+            (0.016, -0.018, -24, 11), (-0.038, 0.044, 40, -6))):
+        stick = M.rounded_box((0.030, 0.0068, 0.0044), bevel=0.0014, segments=3,
                               subsurf=1, name=f"人参{i}", collection=collection)
-        M.place(stick, (x, y, surface_z(math.hypot(x, y)) - 0.0022), (tilt, 0, spin))
+        M.place(stick, (x, y, surface_z(math.hypot(x, y)) + 0.0010), (tilt, 0, spin))
         M.set_material(stick, carrot_mat)
         out.append(stick)
 
-    for i, (x, y, rot) in enumerate(((0.006, -0.006, -14), (-0.018, 0.006, 52))):
-        lf = M.leaf(length=0.030, width=0.016, curl=0.14, thickness=0.00022,
+    for i, (x, y, rot) in enumerate(((0.008, -0.008, -14), (-0.020, 0.008, 52),
+                                     (0.034, 0.030, 96))):
+        lf = M.leaf(length=0.034, width=0.019, curl=0.14, thickness=0.00022,
                     name=f"三つ葉{i}", collection=collection)
-        M.place(lf, (x, y, surface_z(math.hypot(x, y)) + 0.0014), (5, -3, rot))
+        M.place(lf, (x, y, surface_z(math.hypot(x, y)) + 0.0016), (5, -3, rot))
         M.set_material(lf, MAT.greens())
         out.append(lf)
     return out

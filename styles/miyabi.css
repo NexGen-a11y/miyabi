@@ -340,7 +340,7 @@ a { color: inherit; }
   list-style: none;
   margin: 0; padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
   gap: clamp(1.25rem, 2.5vw, 2.25rem);
 }
 .dish {
@@ -357,7 +357,7 @@ a { color: inherit; }
   display: grid;
   place-items: center;
   padding: clamp(1.5rem, 3vw, 2.5rem);
-  min-height: 15.5rem;
+  min-height: 19rem;
   overflow: hidden;
 }
 .dish__media::before {
@@ -370,7 +370,7 @@ a { color: inherit; }
 }
 .dish__media img {
   position: relative;
-  max-height: 13rem;
+  max-height: 16.5rem;
   width: auto;
   transition: transform 0.6s var(--ease);
 }

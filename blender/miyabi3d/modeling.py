@@ -64,11 +64,6 @@ def auto_smooth(obj: bpy.types.Object, angle_deg: float = 35.0):
     me.update()
 
 
-def shade_flat(obj: bpy.types.Object):
-    for poly in obj.data.polygons:
-        poly.use_smooth = False
-
-
 # --------------------------------------------------------------------------
 # 回転体 (轆轤) — 椀・皿・湯呑・土鍋・提灯はすべてこれで挽く
 # --------------------------------------------------------------------------
@@ -153,26 +148,6 @@ def _cylindrical_uv(obj, verts, faces, segments, profile):
             layer.data[loop_index].uv = (u, v_of_vert.get(vert, 0.0))
             loop_index += 1
     return layer
-
-
-def resample(profile: Profile, subdivisions: int = 3) -> list[tuple[float, float]]:
-    """断面を Catmull-Rom で滑らかに打ち直す (轆轤の挽き目をなめらかに)。"""
-    pts = [Vector(p) for p in profile]
-    if len(pts) < 3:
-        return [tuple(p) for p in pts]
-    ext = [pts[0] - (pts[1] - pts[0])] + pts + [pts[-1] + (pts[-1] - pts[-2])]
-    out: list[tuple[float, float]] = []
-    for i in range(len(pts) - 1):
-        p0, p1, p2, p3 = ext[i], ext[i + 1], ext[i + 2], ext[i + 3]
-        for s in range(subdivisions):
-            t = s / subdivisions
-            t2, t3 = t * t, t * t * t
-            p = 0.5 * ((2 * p1) + (-p0 + p2) * t
-                       + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2
-                       + (-p0 + 3 * p1 - 3 * p2 + p3) * t3)
-            out.append((max(p.x, 0.0), p.y))
-    out.append((max(pts[-1].x, 0.0), pts[-1].y))
-    return out
 
 
 # --------------------------------------------------------------------------
@@ -263,16 +238,6 @@ def add_subsurf(obj, levels=2, render_levels=2, simple=False):
     return m
 
 
-def add_bevel(obj, width=0.001, segments=3, angle_deg=30.0):
-    m = obj.modifiers.new("Bevel", 'BEVEL')
-    m.width = width
-    m.segments = segments
-    m.limit_method = 'ANGLE'
-    m.angle_limit = math.radians(angle_deg)
-    m.harden_normals = False
-    return m
-
-
 def add_solidify(obj, thickness=0.001, offset=-1.0):
     m = obj.modifiers.new("Solidify", 'SOLIDIFY')
     m.thickness = thickness
@@ -301,22 +266,6 @@ def add_displace(obj, tex, strength=0.001, mid_level=0.5, coords='LOCAL'):
     m.strength = strength
     m.mid_level = mid_level
     m.texture_coords = coords
-    return m
-
-
-def add_bend(obj, angle_deg=40.0, axis='X', deform_axis='Z'):
-    m = obj.modifiers.new("Bend", 'SIMPLE_DEFORM')
-    m.deform_method = 'BEND'
-    m.angle = math.radians(angle_deg)
-    m.deform_axis = deform_axis
-    return m
-
-
-def add_shrinkwrap(obj, target, offset=0.0005, mode='NEAREST_SURFACEPOINT'):
-    m = obj.modifiers.new("Shrinkwrap", 'SHRINKWRAP')
-    m.target = target
-    m.offset = offset
-    m.wrap_method = mode
     return m
 
 

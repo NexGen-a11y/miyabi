@@ -22,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
-from miyabi3d import assets, materials as MAT, modeling as M, staging as S  # noqa: E402
+from miyabi3d import assets, modeling as M, postprocess as P, staging as S  # noqa: E402
 
 DEFAULT_OUT = os.path.normpath(os.path.join(HERE, "..", "assets"))
 
@@ -76,7 +76,7 @@ def _dish(ctx, module, filename, width, height, samples, azimuth, elevation,
     cam = S.camera(target=res["focus"], distance=res["radius"] * 6,
                    azimuth=azimuth, elevation=elevation, focal=focal)
     S.frame(cam, res["objects"], margin)
-    return S.render(ctx.path("renders", filename), quality=92)
+    return P.feather_edges(S.render(ctx.path("renders", filename), quality=92))
 
 
 @shot("wanmono")
@@ -93,8 +93,9 @@ def shot_sushi(ctx):
 
 @shot("donabe")
 def shot_donabe(ctx):
+    # 飯の白が広いので、キーを一段落として飛ばないようにする
     return _dish(ctx, "donabe", "dish-donabe.webp", 1400, 1000, 96,
-                 azimuth=-64, elevation=34, focal=100, margin=1.06)
+                 azimuth=-64, elevation=36, focal=100, margin=1.06, key=0.95)
 
 
 @shot("shuki")
@@ -123,7 +124,7 @@ def shot_emblem(ctx):
     cam = S.camera(target=res["focus"], distance=0.6, azimuth=-90, elevation=0,
                    focal=125)
     S.frame(cam, res["objects"], 1.16)
-    return S.render(ctx.path("renders", "emblem.webp"), quality=94)
+    return P.feather_edges(S.render(ctx.path("renders", "emblem.webp"), quality=94))
 
 
 @shot("chochin")
@@ -139,7 +140,7 @@ def shot_chochin(ctx):
     cam = S.camera(target=res["focus"], distance=1.2, azimuth=-62, elevation=6,
                    focal=105)
     S.frame(cam, res["objects"], 1.10)
-    return S.render(ctx.path("renders", "chochin.webp"), quality=93)
+    return P.feather_edges(S.render(ctx.path("renders", "chochin.webp"), quality=93))
 
 
 # --------------------------------------------------------------------------
@@ -241,6 +242,21 @@ def shot_models(ctx):
         path = S.export_glb(meshes, ctx.path("models", f"{name}.glb"))
         done.append(f"{name} ({os.path.getsize(path) // 1024}KB)")
     return ", ".join(done)
+
+
+@shot("polish")
+def shot_polish(ctx):
+    """焼き直さずに、透過画像の縁だけ整える (既存の出力にかけ直すため)."""
+    done = []
+    targets = [os.path.join(ctx.path("renders"), n)
+               for n in sorted(os.listdir(ctx.path("renders")))
+               if n.endswith(".webp")] if os.path.isdir(ctx.path("renders")) else []
+    for path in targets:
+        if os.path.basename(path) in {"hero.webp", "scene-seat.webp"}:
+            continue  # 不透過のカットは触らない
+        P.feather_edges(path)
+        done.append(os.path.basename(path))
+    return ", ".join(done) or "対象なし"
 
 
 # --------------------------------------------------------------------------
