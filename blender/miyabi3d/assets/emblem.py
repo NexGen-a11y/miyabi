@@ -32,8 +32,10 @@ def build(collection=None, text="雅", plate=True, stand=True):
         M.set_material(ring, gold)
         objs.append(ring)
 
-    glyph = M.text_mesh(text, T.font_path(), size=0.104, extrude=0.0052,
-                        bevel=0.0011, name="雅", collection=collection)
+    # Blender の文字サイズは em 基準で、和文書体だと字面がかなり小さく出る。
+    # 実測して、輪の内側いっぱいに字面が来るところまで上げている。
+    glyph = M.text_mesh(text, T.font_path(), size=0.248, extrude=0.0062,
+                        bevel=0.0016, name="雅", collection=collection)
     M.place(glyph, (0, -0.0062, lift), (90, 0, 0))
     glyph = M.to_mesh(glyph, "雅")
     M.set_material(glyph, gold)
