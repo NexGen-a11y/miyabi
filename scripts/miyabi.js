@@ -149,9 +149,14 @@ class Turntable {
     }
     this.frames = await Promise.all(loads);
     this.spinner.hidden = true;
-    // 1枚でも取れていなければ静止画のまま置いておく
+    // 1枚も取れなければ回せないので、案内も引っ込める
     this.enabled = this.frames.some((f) => f.naturalWidth > 0);
-    if (this.enabled) this.bind();
+    if (this.enabled) {
+      this.bind();
+    } else {
+      this.grab.hidden = true;
+      this.root.closest('.utsuwa__stage')?.setAttribute('hidden', '');
+    }
   }
 
   show(index) {
@@ -389,7 +394,10 @@ async function playOpening() {
     window.addEventListener(type, skip, { once: true, passive: true });
   });
 
-  await atMost(preloadFrames(pattern, order), 1200);
+  const loaded = await atMost(preloadFrames(pattern, order), 1200);
+  // 連番が取れないときに欠けた画像を見せるくらいなら、幕を出さずに開く
+  const ok = Array.isArray(loaded) && loaded.filter((f) => f.naturalWidth > 0).length;
+  if (!ok || ok < order.length / 2) { close(); return; }
 
   for (const index of order) {
     if (skipped) break;
@@ -430,9 +438,15 @@ function setupScrollMon() {
 
   const start = () => {
     if (ready) return;
-    ready = true;
     const all = Array.from({ length: count }, (_, i) => i);
-    preloadFrames(pattern, all).then(update);
+    preloadFrames(pattern, all).then((frames) => {
+      if (!frames.some((f) => f.naturalWidth > 0)) {
+        el.remove();   // 連番が無ければ飾りごと下ろす
+        return;
+      }
+      ready = true;
+      update();
+    });
   };
 
   if ('IntersectionObserver' in window) {
