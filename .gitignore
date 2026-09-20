@@ -1,0 +1,12 @@
+# Blender をモジュールとして入れる仮想環境
+.venv/
+__pycache__/
+*.pyc
+
+# フォントは blender/fonts/fetch.sh で取得する (OFL, 13MB)
+blender/fonts/*.ttf
+blender/fonts/*.otf
+
+# レンダリングの途中生成物
+*.blend1
+blender/out/
