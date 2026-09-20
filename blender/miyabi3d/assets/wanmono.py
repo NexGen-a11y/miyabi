@@ -86,9 +86,9 @@ def garnish(collection=None):
     out.append(beni)
 
     for i, (x, y, rot, length) in enumerate((
-            (0.0205, -0.0118, (8, 3, -38), 0.0325),
-            (0.0268, 0.0092, (-6, 5, 52), 0.0280),
-            (0.0088, 0.0072, (4, -4, 2), 0.0235))):
+            (0.0176, -0.0072, (8, 3, -26), 0.0325),
+            (0.0232, 0.0042, (-6, 5, 40), 0.0280),
+            (0.0116, 0.0040, (4, -4, 6), 0.0235))):
         lf = M.leaf(length=length, width=length * 0.50, curl=0.13,
                     thickness=0.00022, name=f"三つ葉{i}", collection=collection)
         M.place(lf, (x, y, FILL + 0.0014), rot)
@@ -101,16 +101,13 @@ def garnish(collection=None):
     M.set_material(stem, MAT.greens(color=(0.15, 0.29, 0.065), roughness=0.4, name="軸"))
     out.append(stem)
 
-    peel = M.grid((0.0142, 0.0056), (14, 7), "柚子皮", collection)
+    peel = M.grid((0.0118, 0.0052), (12, 7), "柚子皮", collection)
     for vert in peel.data.vertices:
-        # 皮は反っているので、長手方向に持ち上げつつ端を細める
-        tx = vert.co.x / 0.0071
-        vert.co.y *= 1.0 - 0.45 * tx ** 2
-        vert.co.z = tx ** 2 * 0.0030 - 0.0005
+        vert.co.z = (vert.co.x / 0.0118) ** 2 * 0.0026 - 0.0004
     M.recalc_normals(peel)
     M.add_solidify(peel, 0.0009, offset=0.0)
     M.auto_smooth(peel, 50)
-    M.place(peel, (-0.0072, -0.0208, FILL + 0.0013), (0, 6, 52))
+    M.place(peel, (-0.0046, -0.0196, FILL + 0.0012), (0, 0, 58))
     M.set_material(peel, MAT.yuzu())
     out.append(peel)
     return out
